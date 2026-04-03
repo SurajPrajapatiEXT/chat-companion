@@ -67,7 +67,7 @@ function ChatBubble({ msg }: { msg: ChatMessage }) {
         <p className="whitespace-pre-wrap break-words">{msg.content}</p>
         <div className={`flex items-center gap-1 mt-0.5 ${isUser ? "justify-end" : "justify-end"}`}>
           <span className="text-[10px] text-muted-foreground/70">{formatTime(msg.timestamp)}</span>
-          {isUser && <CheckCheck className="h-3.5 w-3.5 text-blue-400" />}
+          {isUser && <CheckCheck className="h-3.5 w-3.5 text-chat-tick" />}
         </div>
       </div>
     </div>

@@ -68,6 +68,7 @@ export default {
           "input-bg": "hsl(var(--chat-input-bg))",
           "date-bg": "hsl(var(--chat-date-bg))",
           green: "hsl(var(--chat-green))",
+          tick: "hsl(var(--chat-tick))",
         },
       },
       borderRadius: {
