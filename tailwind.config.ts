@@ -63,6 +63,12 @@ export default {
         chat: {
           user: "hsl(var(--chat-user))",
           bot: "hsl(var(--chat-bot))",
+          bg: "hsl(var(--chat-bg))",
+          header: "hsl(var(--chat-header))",
+          "input-bg": "hsl(var(--chat-input-bg))",
+          "date-bg": "hsl(var(--chat-date-bg))",
+          green: "hsl(var(--chat-green))",
+          tick: "hsl(var(--chat-tick))",
         },
       },
       borderRadius: {

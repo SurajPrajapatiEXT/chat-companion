@@ -3,22 +3,104 @@ import { useAuth } from "@/context/AuthContext";
 import { chatApi } from "@/services/api";
 import { chatDb } from "@/services/indexedDb";
 import { ChatMessage, ChatSession } from "@/types/chat";
-import { Send, Loader2, Bot, UserIcon } from "lucide-react";
+import {
+  Send,
+  Loader2,
+  ArrowLeft,
+  Video,
+  Phone,
+  MoreVertical,
+  Smile,
+  Camera,
+  Mic,
+  Check,
+  CheckCheck,
+  Bot,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
   session?: ChatSession | null;
   onSessionUpdate?: (session: ChatSession) => void;
 }
 
+function formatTime(ts: number): string {
+  const d = new Date(ts);
+  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function DateSeparator() {
+  return (
+    <div className="flex justify-center my-3">
+      <span className="rounded-lg bg-chat-date-bg px-3 py-1 text-xs text-muted-foreground shadow-sm">
+        Today
+      </span>
+    </div>
+  );
+}
+
+function ChatBubble({ msg }: { msg: ChatMessage }) {
+  const isUser = msg.role === "user";
+
+  return (
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"} px-3 mb-1`}>
+      <div
+        className={`relative max-w-[80%] rounded-lg px-3 py-1.5 text-sm leading-relaxed shadow-sm ${
+          isUser
+            ? "bg-chat-user text-foreground rounded-tr-none"
+            : "bg-chat-bot text-foreground rounded-tl-none"
+        }`}
+      >
+        {/* Tail notch */}
+        <div
+          className={`absolute top-0 w-3 h-3 ${
+            isUser
+              ? "-right-1.5 bg-chat-user"
+              : "-left-1.5 bg-chat-bot"
+          }`}
+          style={{
+            clipPath: isUser
+              ? "polygon(0 0, 100% 0, 0 100%)"
+              : "polygon(100% 0, 0 0, 100% 100%)",
+          }}
+        />
+        <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+        <div className={`flex items-center gap-1 mt-0.5 ${isUser ? "justify-end" : "justify-end"}`}>
+          <span className="text-[10px] text-muted-foreground/70">{formatTime(msg.timestamp)}</span>
+          {isUser && <CheckCheck className="h-3.5 w-3.5 text-chat-tick" />}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TypingIndicator() {
+  return (
+    <div className="flex justify-start px-3 mb-1">
+      <div className="relative max-w-[80%] rounded-lg rounded-tl-none bg-chat-bot px-4 py-3 shadow-sm">
+        <div
+          className="absolute top-0 -left-1.5 w-3 h-3 bg-chat-bot"
+          style={{ clipPath: "polygon(100% 0, 0 0, 100% 100%)" }}
+        />
+        <div className="flex items-center gap-1">
+          <span className="h-2 w-2 rounded-full bg-muted-foreground animate-pulse-dot" />
+          <span className="h-2 w-2 rounded-full bg-muted-foreground animate-pulse-dot [animation-delay:0.2s]" />
+          <span className="h-2 w-2 rounded-full bg-muted-foreground animate-pulse-dot [animation-delay:0.4s]" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ChatWindow({ session, onSessionUpdate }: Props) {
   const { user, token } = useAuth();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState<string>("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Init or load session
   useEffect(() => {
     if (session) {
       setMessages(session.messages);
@@ -35,7 +117,6 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
   }, [messages]);
 
   const buildContextData = useCallback((): string => {
-    // Build previous context from messages for the API "data" field
     if (messages.length === 0) return "";
     return messages
       .map((m) => `${m.role === "user" ? "User" : "Bot"}: ${m.content}`)
@@ -61,8 +142,6 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
     try {
       const res = await chatApi.send(
         {
-          // Mobile is not available from login response; using a placeholder.
-          // TODO: Replace with actual mobile number if available in user data.
           mobile: "0000000000",
           name: user?.username || "User",
           instructionKey: "instruction_force_to_visit_gym",
@@ -75,8 +154,14 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
       const rawResponse = res.response;
       const botContent =
         typeof rawResponse === "object" && rawResponse !== null
-          ? (rawResponse as Record<string, unknown>).text as string || JSON.stringify(rawResponse)
-          : res.reply || res.message || (typeof rawResponse === "string" ? rawResponse : JSON.stringify(res));
+          ? ((rawResponse as Record<string, unknown>).text as string) ||
+            JSON.stringify(rawResponse)
+          : res.reply ||
+            res.message ||
+            (typeof rawResponse === "string"
+              ? rawResponse
+              : JSON.stringify(res));
+
       const botMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: "bot",
@@ -87,7 +172,6 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
       const allMessages = [...updatedMessages, botMsg];
       setMessages(allMessages);
 
-      // Persist to IndexedDB
       const title = updatedMessages[0]?.content.slice(0, 60) || "New Chat";
       const now = Date.now();
       const chatSession: ChatSession = {
@@ -99,7 +183,7 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
       };
       await chatDb.save(chatSession);
       onSessionUpdate?.(chatSession);
-    } catch (err) {
+    } catch {
       const errorMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: "bot",
@@ -120,72 +204,71 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto scrollbar-thin p-4 space-y-4">
+    <div className="flex h-full flex-col bg-chat-bg">
+      {/* ── Header ── */}
+      <div className="flex items-center gap-2 bg-chat-header px-2 py-2 shadow-md z-10">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="p-1.5 rounded-full hover:bg-secondary/50 transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5 text-muted-foreground" />
+        </button>
+
+        {/* Bot avatar */}
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-chat-green">
+          <Bot className="h-5 w-5 text-foreground" />
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground truncate">AI Assistant</p>
+          <p className="text-xs text-chat-green">Online</p>
+        </div>
+
+        {/* Action icons – no-op */}
+        <button className="p-2 rounded-full hover:bg-secondary/50 transition-colors">
+          <Video className="h-5 w-5 text-muted-foreground" />
+        </button>
+        <button className="p-2 rounded-full hover:bg-secondary/50 transition-colors">
+          <Phone className="h-5 w-5 text-muted-foreground" />
+        </button>
+        <button className="p-2 rounded-full hover:bg-secondary/50 transition-colors">
+          <MoreVertical className="h-5 w-5 text-muted-foreground" />
+        </button>
+      </div>
+
+      {/* ── Messages ── */}
+      <div className="flex-1 overflow-y-auto scrollbar-thin py-2">
         {messages.length === 0 && (
-          <div className="flex h-full flex-col items-center justify-center text-center">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
-              <Bot className="h-8 w-8 text-primary" />
+          <div className="flex h-full flex-col items-center justify-center text-center px-6">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-chat-green/20">
+              <Bot className="h-8 w-8 text-chat-green" />
             </div>
-            <h2 className="text-xl font-semibold text-foreground">Start a conversation</h2>
-            <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+            <h2 className="text-lg font-semibold text-foreground">Start a conversation</h2>
+            <p className="mt-1 max-w-xs text-sm text-muted-foreground">
               Type a message below to begin chatting with the AI assistant.
             </p>
           </div>
         )}
 
+        {messages.length > 0 && <DateSeparator />}
+
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex animate-fade-in ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
-            <div className={`flex max-w-[80%] gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
-              <div
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                  msg.role === "user" ? "bg-primary" : "bg-secondary"
-                }`}
-              >
-                {msg.role === "user" ? (
-                  <UserIcon className="h-4 w-4 text-primary-foreground" />
-                ) : (
-                  <Bot className="h-4 w-4 text-foreground" />
-                )}
-              </div>
-              <div
-                className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                  msg.role === "user"
-                    ? "bg-chat-user text-primary-foreground"
-                    : "bg-chat-bot text-foreground"
-                }`}
-              >
-                {msg.content}
-              </div>
-            </div>
-          </div>
+          <ChatBubble key={msg.id} msg={msg} />
         ))}
 
-        {loading && (
-          <div className="flex justify-start animate-fade-in">
-            <div className="flex gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary">
-                <Bot className="h-4 w-4 text-foreground" />
-              </div>
-              <div className="flex items-center gap-1 rounded-2xl bg-chat-bot px-4 py-3">
-                <span className="h-2 w-2 rounded-full bg-muted-foreground animate-pulse-dot" />
-                <span className="h-2 w-2 rounded-full bg-muted-foreground animate-pulse-dot [animation-delay:0.2s]" />
-                <span className="h-2 w-2 rounded-full bg-muted-foreground animate-pulse-dot [animation-delay:0.4s]" />
-              </div>
-            </div>
-          </div>
-        )}
+        {loading && <TypingIndicator />}
 
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <div className="border-t border-border p-4">
-        <div className="mx-auto flex max-w-3xl items-end gap-2">
+      {/* ── Input bar ── */}
+      <div className="flex items-end gap-2 bg-chat-header px-2 py-2">
+        {/* Emoji – no-op */}
+        <button className="p-2 rounded-full hover:bg-secondary/50 transition-colors shrink-0">
+          <Smile className="h-6 w-6 text-muted-foreground" />
+        </button>
+
+        <div className="flex flex-1 items-end rounded-3xl bg-chat-input-bg px-4 py-2">
           <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -193,16 +276,33 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
             placeholder="Type a message…"
             rows={1}
             disabled={loading}
-            className="flex-1 resize-none rounded-xl border border-input bg-secondary px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 transition-colors"
+            className="flex-1 resize-none bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50 max-h-24 leading-5"
+            style={{ minHeight: "20px" }}
           />
-          <button
-            onClick={handleSend}
-            disabled={loading || !input.trim()}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
-          >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          {/* Camera – no-op */}
+          <button className="ml-2 shrink-0">
+            <Camera className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
+
+        {/* Send / Mic button */}
+        {input.trim() ? (
+          <button
+            onClick={handleSend}
+            disabled={loading}
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-chat-green text-foreground transition-opacity hover:opacity-90 disabled:opacity-40"
+          >
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Send className="h-5 w-5" />
+            )}
+          </button>
+        ) : (
+          <button className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-chat-green text-foreground">
+            <Mic className="h-5 w-5" />
+          </button>
+        )}
       </div>
     </div>
   );
