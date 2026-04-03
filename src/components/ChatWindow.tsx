@@ -72,7 +72,11 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
         token
       );
 
-      const botContent = res.reply || res.message || res.response || JSON.stringify(res);
+      const rawResponse = res.response;
+      const botContent =
+        typeof rawResponse === "object" && rawResponse !== null
+          ? (rawResponse as Record<string, unknown>).text as string || JSON.stringify(rawResponse)
+          : res.reply || res.message || (typeof rawResponse === "string" ? rawResponse : JSON.stringify(res));
       const botMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: "bot",
