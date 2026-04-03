@@ -45,8 +45,13 @@
     --sidebar-border: 0 0% 18%;
     --sidebar-ring: 0 72% 51%;
 
-    --chat-user: 0 72% 45%;
-    --chat-bot: 0 0% 15%;
+    --chat-user: 150 60% 30%;
+    --chat-bot: 200 8% 20%;
+    --chat-bg: 200 15% 10%;
+    --chat-header: 200 12% 14%;
+    --chat-input-bg: 200 10% 16%;
+    --chat-date-bg: 200 12% 18%;
+    --chat-green: 150 60% 40%;
   }
 }
 
