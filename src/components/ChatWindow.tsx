@@ -45,19 +45,17 @@ function ChatBubble({ msg }: { msg: ChatMessage }) {
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"} px-3 mb-1`}>
       <div
-        className={`relative max-w-[80%] rounded-lg px-3 py-1.5 text-sm leading-relaxed shadow-sm ${
-          isUser
-            ? "bg-chat-user text-foreground rounded-tr-none"
-            : "bg-chat-bot text-foreground rounded-tl-none"
-        }`}
+        className={`relative max-w-[80%] rounded-lg px-3 py-1.5 text-sm leading-relaxed shadow-sm ${isUser
+          ? "bg-chat-user text-foreground rounded-tr-none"
+          : "bg-chat-bot text-foreground rounded-tl-none"
+          }`}
       >
         {/* Tail notch */}
         <div
-          className={`absolute top-0 w-3 h-3 ${
-            isUser
-              ? "-right-1.5 bg-chat-user"
-              : "-left-1.5 bg-chat-bot"
-          }`}
+          className={`absolute top-0 w-3 h-3 ${isUser
+            ? "-right-1.5 bg-chat-user"
+            : "-left-1.5 bg-chat-bot"
+            }`}
           style={{
             clipPath: isUser
               ? "polygon(0 0, 100% 0, 0 100%)"
@@ -155,12 +153,12 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
       const botContent =
         typeof rawResponse === "object" && rawResponse !== null
           ? ((rawResponse as Record<string, unknown>).text as string) ||
-            JSON.stringify(rawResponse)
+          JSON.stringify(rawResponse)
           : res.reply ||
-            res.message ||
-            (typeof rawResponse === "string"
-              ? rawResponse
-              : JSON.stringify(res));
+          res.message ||
+          (typeof rawResponse === "string"
+            ? rawResponse
+            : JSON.stringify(res));
 
       const botMsg: ChatMessage = {
         id: crypto.randomUUID(),
@@ -208,7 +206,7 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
       {/* ── Header ── */}
       <div className="flex items-center gap-2 bg-chat-header px-2 py-2 shadow-md z-10">
         <button
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/")}
           className="p-1.5 rounded-full hover:bg-secondary/50 transition-colors"
         >
           <ArrowLeft className="h-5 w-5 text-muted-foreground" />
@@ -220,7 +218,7 @@ export default function ChatWindow({ session, onSessionUpdate }: Props) {
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground truncate">AI Assistant</p>
+          <p className="text-sm font-semibold text-foreground truncate">Seema AI</p>
           <p className="text-xs text-chat-green">Online</p>
         </div>
 

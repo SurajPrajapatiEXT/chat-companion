@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import LoginPage from "@/pages/LoginPage";
+import IndexPage from "@/pages/Index";
 import DashboardPage from "@/pages/DashboardPage";
 import ChatPage from "@/pages/ChatPage";
 import HistoryPage from "@/pages/HistoryPage";
@@ -28,7 +29,8 @@ const App = () => (
                 </ProtectedRoute>
               }
             >
-              <Route path="/" element={<ChatPage />} />
+              <Route path="/" element={<IndexPage />} />
+              <Route path="/chat" element={<ChatPage />} />
               <Route path="/history" element={<HistoryPage />} />
               <Route path="/account" element={<AccountPage />} />
             </Route>

@@ -3,7 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { MessageSquarePlus, History, User, LogOut } from "lucide-react";
 
 const navItems = [
-  { to: "/", icon: MessageSquarePlus, label: "New Chat" },
+  { to: "/chat", icon: MessageSquarePlus, label: "New Chat" },
   { to: "/history", icon: History, label: "History" },
   { to: "/account", icon: User, label: "Account Info" },
 ];
@@ -40,10 +40,9 @@ export default function AppSidebar({ onNavigate }: Props) {
             end={item.to === "/"}
             onClick={onNavigate}
             className={({ isActive }) =>
-              `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                isActive
-                  ? "bg-sidebar-accent text-sidebar-primary"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+              `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${isActive
+                ? "bg-sidebar-accent text-sidebar-primary"
+                : "text-sidebar-foreground hover:bg-sidebar-accent/50"
               }`
             }
           >
