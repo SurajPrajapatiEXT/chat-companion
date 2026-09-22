@@ -20,9 +20,7 @@ export default function DashboardPage() {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 md:relative md:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 md:relative md:translate-x-0 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <AppSidebar onNavigate={() => setSidebarOpen(false)} />
       </div>
@@ -45,7 +43,7 @@ export default function DashboardPage() {
               {user?.username}
             </span>
             <img
-              src={user?.profilePic || "/placeholder.svg"}
+              src={user?.profilePic || `${import.meta.env.BASE_URL}placeholder.svg`}
               alt="Profile"
               className="h-8 w-8 rounded-full border border-border object-cover"
               onError={(e) => {
