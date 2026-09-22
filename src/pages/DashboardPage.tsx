@@ -43,11 +43,11 @@ export default function DashboardPage() {
               {user?.username}
             </span>
             <img
-              src={user?.profilePic || `${import.meta.env.BASE_URL}placeholder.svg`}
+              src={user?.profilePic || `${import.meta.env.BASE_URL}/placeholder.svg`}
               alt="Profile"
               className="h-8 w-8 rounded-full border border-border object-cover"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = "/placeholder.svg";
+                (e.target as HTMLImageElement).src = "/chat-companion/placeholder.svg";
               }}
             />
           </div>
