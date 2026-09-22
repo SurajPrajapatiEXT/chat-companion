@@ -16,6 +16,7 @@ export default function AppSidebar({ onNavigate }: Props) {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
+  console.log(import.meta.env.BASE_URL);
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
