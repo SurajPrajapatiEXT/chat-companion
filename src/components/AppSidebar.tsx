@@ -56,7 +56,7 @@ export default function AppSidebar({ onNavigate }: Props) {
       <div className="border-t border-sidebar-border p-3 space-y-1">
         <div className="flex items-center gap-3 px-3 py-2">
           <img
-            src={user?.profilePic || "/placeholder.svg"}
+            src={user?.profilePic || `${import.meta.env.BASE_URL}placeholder.svg`}
             alt="Profile"
             className="h-8 w-8 rounded-full border border-border object-cover"
             onError={(e) => {

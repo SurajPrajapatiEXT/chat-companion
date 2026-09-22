@@ -28,7 +28,7 @@ export default function AccountPage() {
         {/* Profile card */}
         <div className="flex flex-col items-center rounded-2xl border border-border bg-card p-6 text-center">
           <img
-            src={user.profilePic || "/placeholder.svg"}
+            src={user?.profilePic || `${import.meta.env.BASE_URL}placeholder.svg`}
             alt="Profile"
             className="h-20 w-20 rounded-full border-2 border-primary object-cover"
             onError={(e) => {
