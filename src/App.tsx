@@ -19,7 +19,7 @@ const App = () => (
     <TooltipProvider>
       <Sonner />
       <AuthProvider>
-        <BrowserRouter>
+  <BrowserRouter basename="/chat-companion">
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route
