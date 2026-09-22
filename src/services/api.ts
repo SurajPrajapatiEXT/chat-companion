@@ -2,7 +2,8 @@ import { LoginRequest, LoginResponse } from "@/types/auth";
 import { ChatApiRequest, ChatApiResponse } from "@/types/chat";
 
 // BASE_URL from environment variable. Falls back to empty string for relative URLs.
-const BASE_URL = import.meta.env.VITE_BASE_URL || "";
+const BASE_URL = import.meta.env.VITE_BASE_URL || "https://nqmd9sgp-7084.inc1.devtunnels.ms";
+
 
 async function request<T>(
   endpoint: string,
